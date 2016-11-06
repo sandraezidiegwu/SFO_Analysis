@@ -1,0 +1,348 @@
+head(testdata$classe)
+head(testdata)
+traindata <- read.csv(trainurl, header = TRUE, sep = ",", na.strings = c("NA", "#DIV/0!", ""))#
+testdata <- read.csv(testurl, header = TRUE, sep = ",", na.strings = c("NA", "#DIV/0!", ""))#
+#
+traindata <- traindata[, colSums(is.na(traindata)) == 0]#
+testdata <- testdata[, colSums(is.na(testdata)) == 0]#
+#
+nzv <- nearZeroVar(trained)#
+trained <- trained[, -nzv]#
+nottrained <- nottrained[, -nzv]#
+#
+nadata <- sapply(trained, function(x) mean(is.na(x))) > 0.95#
+trained <- trained[, mostlyNA == F]#
+nottrained <- nottraiend[, mostlyNA == F]#
+#
+trained <- trained[, -(1:5)]#
+nottrained <- nottrained[, -(1:5)]#
+#
+set.seed(123)#
+inTrain <- createDataPartition(y = traindata$classe, p = 0.6, list = FALSE)#
+trained <- traindata[inTrain,]#
+nottrained <- traindata[-inTrain,]#
+#
+trainrf <- train(classe ~ ., data = trained, method = "rf")#
+trainrf
+traindata <- traindata[, colSums(is.na(traindata)) == 0]#
+testdata <- testdata[, colSums(is.na(testdata)) == 0]#
+#
+set.seed(123)#
+inTrain <- createDataPartition(y = traindata$classe, p = 0.6, list = FALSE)#
+trained <- traindata[inTrain,]#
+nottrained <- traindata[-inTrain,]#
+#
+nzv <- nearZeroVar(trained)#
+trained <- trained[, -nzv]#
+nottrained <- nottrained[, -nzv]#
+#
+nadata <- sapply(trained, function(x) mean(is.na(x))) > 0.95#
+trained <- trained[, mostlyNA == F]#
+nottrained <- nottraiend[, mostlyNA == F]#
+#
+trained <- trained[, -(1:5)]#
+nottrained <- nottrained[, -(1:5)]#
+#
+fold <- trainControl(method = "cv", 5)#
+trainrf <- train(classe ~ ., data = trained, method = "rf", trControl = fold)#
+trainrf
+traindata <- traindata[, colSums(is.na(traindata)) == 0]#
+testdata <- testdata[, colSums(is.na(testdata)) == 0]#
+#
+set.seed(123)#
+inTrain <- createDataPartition(y = traindata$classe, p = 0.6, list = FALSE)#
+trained <- traindata[inTrain,]#
+nottrained <- traindata[-inTrain,]#
+#
+nzv <- nearZeroVar(trained)#
+trained <- trained[, -nzv]#
+nottrained <- nottrained[, -nzv]#
+#
+trained <- trained[, -(1:5)]#
+nottrained <- nottrained[, -(1:5)]#
+#
+fold <- trainControl(method = "cv", 5)#
+trainrf <- train(classe ~ ., data = trained, method = "rf", trControl = fold)#
+trainrf
+trainprd <- predict(trainrf, nottrained)#
+confusionMatrix(nottrained$classe, trainprd)
+oserror <- 1 - as.numeric(confusionMatrix(nottrained$classe, trainprd)$overall[1])#
+oserror
+predict(trainrf, traindata[, -length(names(testdata))])
+result <- predict(trainrf, traindata[, -length(names(testdata))])
+result[1:20]
+predict(trainprd, nottrained)
+predict(trainrf, nottrained)
+trainprd <- predict(trainrf, trained)#
+confusionMatrix(trained$classe, trained$classe)
+trainprd <- predict(trainrf, trained)#
+confusionMatrix(trainedprd, trained$classe)
+trainprd <- predict(trainrf, trained)#
+confusionMatrix(trainprd, trained$classe)
+ntrainprd <- predict(trainrf, nottrained)#
+confusionMatrix(ntrainprd, nottrained$classe)
+oserror <- 1 - as.numeric(confusionMatrix(nottrained$classe, trainprd)$overall[1])
+oserror <- 1 - as.numeric(confusionMatrix(ntrainprd, nottrained$classe)$overall[1])
+oserror
+testprd <- predict(trainrf, nottrained)
+testprd
+head(traindata)
+head(testdata)
+str(testdata$problem_id)
+ncol(testdata)
+traindata <- read.csv(trainurl, header = TRUE, sep = ",", na.strings = c("NA", "#DIV/0!", ""))#
+testdata <- read.csv(testurl, header = TRUE, sep = ",", na.strings = c("NA", "#DIV/0!", ""))#
+#
+traindata <- traindata[, colSums(is.na(traindata)) == 0]#
+testdata <- testdata[, colSums(is.na(testdata)) == 0]#
+#
+nzv <- nearZeroVar(traindata)#
+traindata <- traindata[, -nzv]#
+testdata <- testdata[, -nzv]#
+#
+traindata <- traindata[, -(1:5)]#
+testdata <- testdata[, -(1:5)]#
+#
+set.seed(123)#
+inTrain <- createDataPartition(y = traindata$classe, p = 0.6, list = FALSE)#
+trained <- traindata[inTrain,]#
+nottrained <- traindata[-inTrain,]#
+#
+fold <- trainControl(method = "cv", 5)#
+trainrf <- train(classe ~ ., data = trained, method = "rf", trControl = fold)#
+trainrf#
+#
+trainprd <- predict(trainrf, trained)#
+confusionMatrix(trainprd, trained$classe)#
+#
+ntrainprd <- predict(trainrf, nottrained)#
+confusionMatrix(ntrainprd, nottrained$classe)#
+oserror <- 1 - as.numeric(confusionMatrix(ntrainprd, nottrained$classe)$overall[1])#
+oserror#
+#
+testprd <- predict(trainrf, nottrained)
+testprd
+testprd <- predict(trainrf, testdata[, -length(names(testdata))])
+testprd
+testprd <- predict(trainrf, testdata)
+testprd
+fancyRpartPlot(testprd$finalModel)
+fancyRpartPlot(trainprd$finalModel)
+fancyRpartPlot(trainrf$finalModel)
+plottest <- rpart(classe ~ ., data = testdata, method = "class")
+plottr <- rpart(classe ~ ., data = traindata, method = "class")
+prp(plottr)
+plottr <- rpart(classe ~ ., data = testprd, method = "class")
+plottr <- rpart(classe ~ ., data = nottrained, method = "class")
+prp(plottr)
+fancyRpartPlot(trainrf)
+library(MASS)
+data(shuttle)
+head(shuttle)
+lm1 <- lm(use ~ wind, data = shuttle)
+summary(lm1)
+levels(shuttle$use)
+levels(shuttle$wind)
+class(shuttle$use)
+clss(shuttle$wind)
+class(shuttle$wind)
+summary(as.numeric(lm1))
+lm1 <- lm(as.numeric(use) ~ as.numeric(wind), data = shuttle)
+summary(lm1)
+odds.ratio(lm1)
+exp <- as.integer(shuttle$use)
+head(exp)
+lm1 <- lm(as.integer(use) ~ as.integer(wind), data = shuttle)
+summary(lm1)
+summary(lm1)$coef
+oddsratio(lm1)
+library(oddsratio)
+install.packages(oddsratio)
+library(fmsb)
+install.packages(fmsb)
+install.packages("fmsb")
+oddsratio(lm1)
+install.packages("oddsratio")
+oddsratio(lm1)
+lm1 <- lm(as.integer(use) ~ wind, data = shuttle)
+summary(lm1)
+lm1 <- lm(as.integer(use) ~ wind - 1, data = shuttle)
+summary(lm1)
+summary(lm1)$coef
+unname(exp(coef(lm1))[1]/exp(coef(lm1))[2])
+levels(shuttle$magn)
+lm1 <- lm(as.integer(magn) ~ wind - 1, data = shuttle)
+summary(lm1)$coef
+unname(exp(coef(lm1))[1]/exp(coef(lm1))[2])
+lm1 <- lm(as.integer(use) ~ wind+magn - 1, data = shuttle)
+summary(lm1)$coef
+lm1 <- glm(as.integer(use) ~ wind+magn - 1, data = shuttle, family = "binomial")
+lm1 <- lm(as.integer(use) ~ wind, data = shuttle)
+summary(lm1)
+lol(.9/.1)
+log(.9/.1)
+lm1 <- lm(as.integer(use) ~ wind - 1, data = shuttle)
+summary(lm1)
+summary(lm1)$coef
+lm1 <- glm(as.integer(use) ~ wind - 1, family = "binomial" data = shuttle)
+lm1 <- glm(as.integer(use) ~ wind - 1, family = "binomial", data = shuttle)
+lm1 <- glm(as.integer(use) ~ wind, family = "binomial", data = shuttle)
+used <- as.integer(use)
+used <- as.integer(shuttle$use)
+head(used)
+lm1 <- glm(used ~ wind, family = "binomial", data = shuttle)
+class(used)
+levels(used)
+levels(as.factor(used))
+used <- as.integer(shuttle$use == "auto")
+levels(as.factor(used))
+lm1 <- glm(used ~ wind, family = "binomial", data = shuttle)
+summary(lm1)
+lm1 <- glm(used ~ wind - 1, family = "binomial", data = shuttle)
+summary(lm1)
+log(.158/.113)
+log(.113/.158)
+lm1 <- lm(used ~ wind - 1, data = shuttle)
+summary(lm1)$coef
+summary(lm1)
+lm1 <- glm(used ~ wind - 1, family = "binomial", data = shuttle)
+?unname
+summary(lm1)$coef
+coef(lm1)
+log(.2513/.2831)
+exp(log(.2513/.2831))
+.2513/(1-.2513)
+.2513/.2831
+exp(.88)
+exp(lm1$coeff)
+exp(coef(lm1))
+exp(confint(lm1))
+1.285714/1.327273
+lm2 <- glm(used ~ wind+magn - 1, family = "binomial", data = shuttle)
+exp(coef(lm2))
+exp(coef(lm2))[1]/exp(coef(lm2))[2]
+unname(exp(coef(lm2))[1]/exp(coef(lm2))[2])
+log(.2513/.2831)
+lm1 <- glm(used ~ wind - 1, family = "binomial", data = shuttle)
+coef(lm1)
+lm1 <- glm(used ~ wind, family = "binomial", data = shuttle)
+coef(lm1)
+lm1 <- glm(1-used ~ wind-1, family = "binomial", data = shuttle)
+coef(lm1)
+data(InsectSprays)
+head(InsectSprays)
+levels(InsectSprays$spray)
+lm3 <- glm(spray ~ count, InsectSprays, family = "poisson")
+lm3 <- glm(count ~ spray -1, InsectSprays, family = "poisson")
+summary(lm3)
+exp(lm3$coef)
+unname(exp(lm3$coef)[1]/exp(lm3$coef)[2])
+x <- -5:5#
+y <- c(5.12, 3.93, 2.67, 1.87, 0.52, 0.08, 0.93, 2.05, 2.54, 3.87, 4.97)
+knots <- c(0)
+splineTerms <- saplly(knots, function(knots) (x>knots)*(x-knots))
+splineTerms <- sapply(knots, function(knots) (x>knots)*(x-knots))
+xMat <- cbind(x, splineTerms)
+yhat - predict(lm(y ~ xMat))
+yhat <- predict(lm(y ~ xMat))
+plot(x,y, frame = FALSE, pch = 21)
+plot(x,y, frame = FALSE, pch = 21, type = "l")
+plot(x,y, frame = FALSE, col = "red")
+plot(x,y)
+lines(x, yhat, col = "red")
+summary(lm(y~xMat-1))
+summary(lm(y~xMat-1))$coeff
+(yhat[10]-yhat[6])/4
+data(mpg)
+data(mtcars)
+pairs(mpg ~ ., mtcars)
+pairs(mpg ~ ., mtcars, col = c("blue", "pink"))
+pairs(mpg ~ ., mtcars, col = c("blue", "pink", "magenta"))
+pairs(mpg ~ ., mtcars, col = c("blue", "magenta"))
+pairs(mpg ~ ., mtcars, col = "magenta")
+install.packages("RODBC")
+library(RODBC)
+library(ODBC)
+library('RODBC')
+install.packages("RODBC")
+install.packages("RODBC", type = "source")
+install.packages("RODBC")
+install.packages("RODBC", type = "source")
+setwd("/Users/sandraezidiegwu/Applications/")
+install.packages("RODBC", type = "source")
+setwd("/Users/sandraezidiegwu/")
+install.packages("~/Downloads/RODBC_1.3-11.tar.gz", repos = NULL, type = "source")
+install.packages("~/Downloads/RODBC_1.3-13.tar.gz", repos = NULL, type = "source")
+getwd()
+setwd("/Users/sandraezidiegwu/Applications/")
+install.packages("~/Downloads/RODBC_1.3-13.tar.gz", repos = NULL, type = "source")
+setwd("/Users/sandraezidiegwu/")
+install.packages("RODBC", type = "source")
+?.libPaths
+.libPaths("Users/sandraezidiegwu/Applications/iODBC")
+searchPaths("Users/sandraezidiegwu/Applications/iODBC")
+searchpaths("Users/sandraezidiegwu/Applications/iODBC")
+install.packages("RODBC", type = "source")
+ODBC_INCLUDE=/path/to/libiodbc-srcs/include' R CMD INSTALL RODBC
+install.packages("RODBC", type = "source")
+install.packages("RODBC")
+install.packages("RODBC", type = "source")
+.libPaths(iODBC/include)
+.libPaths("iODBC/include")
+install.packages("RODBC", type = "source")
+.libPaths("/iODBC/include")
+install.packages("RODBC", type = "source")
+.libPaths("Users/sandraezidiegwu/Applications/Utilities/iODBC/include")
+install.packages("RODBC", type = "source")
+.libPaths("./Utilities/iODBC Administrator.app/Contents/include/")
+install.packages("RODBC", type = "source")
+.libPaths("/Users/sandraezidiegwu/Applications/Utilities/iODBC Administrator.app/Contents/include/")
+install.packages("RODBC", type = "source")
+search("/Users/sandraezidiegwu/Applications/Utilities/iODBC Administrator.app/Contents/include/")
+search(/Users/sandraezidiegwu/Applications/Utilities/iODBC Administrator.app/Contents/include/)
+searchpaths(/Users/sandraezidiegwu/Applications/Utilities/iODBC Administrator.app/Contents/include/)
+searchpaths("/Users/sandraezidiegwu/Applications/Utilities/iODBC Administrator.app/Contents/include/")
+ODBC_INCLUDE=/.Downloads/libiodbc-3.52.10/include' R CMD INSTALL RODBC
+install.packages("RODBC", type = "source")
+.libPaths("Users/sandraezidiegwu/Downloads/libiodbc-3.52.10/include")
+install.packages("RODBC", type = "source")
+search("Users/sandraezidiegwu/Downloads/libiodbc-3.52.10/include")
+?search
+searchpaths(".GlobalEnv/libiodbc-3.52.10/include")
+.libPaths()
+.libPaths( c( .libPaths(), "~/userLibrary"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/sandraezidiegwu"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/sandraezidiegwu/Downloads"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/Downloads"))
+.libPaths()
+install.packages("RODBC", type = "source")
+.libPaths( c( .libPaths(), "~/iODBC Administration.app"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/iODBC"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/include"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/Downloads", "~/include"))
+.libPaths()
+.libPaths( c( .libPaths(), "~/Downloads/libiodbc-3.52.10"))
+.libPaths()
+install.packages("RODBC", type = "source")
+searchpaths(~/Downloads/libiodbc-3.52.10)
+searchpaths()
+searchpaths(c(searchpaths(), "~/Downloads/libiodbc-3.52.10"))
+searchpaths(c(searchpaths(), "C:/Downloads/libiodbc-3.52.10"))
+searchpaths(c(".GlobalEnv", searchpaths(),"C:/Downloads/libiodbc-3.52.10", "package:base"))
+searchpaths(c(".GlobalEnv", "C:/Downloads/libiodbc-3.52.10", "package:base"))
+searchpaths(".GlobalEnv", "C:/Downloads/libiodbc-3.52.10", "package:base")
+searchpath(".GlobalEnv", "C:/Downloads/libiodbc-3.52.10", "package:base")
+searchpaths(".GlobalEnv", "C:/Downloads/libiodbc-3.52.10", "package:base")
+searchpaths()
+searchpaths(c(".GlobalEnv", "/Users/sandraezidiegwu/Downloads/libiodbc-3.52.10", "package:base"))
+setwd(""/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015")
+setwd("/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015")
+install.packages("rmarkdown")
+library(rmarkdown)
+render("survdata.Rmd", "pdf_document")

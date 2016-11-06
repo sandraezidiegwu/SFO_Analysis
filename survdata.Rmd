@@ -1,0 +1,204 @@
+---
+title: "San Francisco International Airport (SFO) Customer Survey"
+author: "Sandra Ezidiegwu"
+date: "July 30, 2016"
+output: html_document
+---
+
+# Synopsis
+This is a mini-project I carried to showcase my data extraction, structuring, manipulating and visualization skills. Due to the limited dataset, I was able to perform a basic analysis using the R Programming Language and Microsoft Excel.
+
+The goal of this report is to identify possible changes that can be implemented by American Airlines (AA) to improve the customer experience of AA customers departing from the San Francisco International Airport (SFO). The results are displayed using barplots to show customer complaints count by airline, destination and complaint type. 
+
+The current data was collected in May 2015 through interviews with 2,958 customers in each of SFO's terminals and boarding areas. Of the 1352 complaints entered into the survey, 42 complaints were raised pertaining to airlines. These  airline complaints ranged from poor staffing and customer service to flight delays and poor flight change communication. AA accounted for 4 of the 42 complaints raised by airline customers in the survey.
+
+Although the complaints raised by airline customers in the survey ranged from operational related problems such as flight delays, to technology related problems such as the absence of online baggage check-in with some airlines.
+
+The four complaints raised by AA customers at the SFO airport were mainly personnel related problems. Low Airline Customer Service Staff, Unavailability of Check-in Staff, and Unhelpful Airline Customer Service Staff can all be categorized under personnel improvement opportunities.
+
+### Recommendations
+Assuming these complaints are significant and representative of the feelings of the population of AA customers flying out of SFO, then based on the analysis of the survey data I would recommend the following:
+
+- AA should investigate and address the causes of operational issues associated with Baggage Claim Difficulty
+
+- Additional Customer Service Staff be added to help with customer questions and check-ins
+
+- AA Customer Service Staff be routinely required to attend service training programs. Additionally, AA can implement a customer service rating rewards program to act as an incentive to Customer Service Staff to better serve AA customers.
+
+### I hope this mini-project helps convey my skills in analyzing and interpreting customer data to gain customer insight. I am confident I will be a valuable addition to American Airlines Customer Research team.
+
+### Limitations
+- Without additional data on the total departing flight count, and total customers surveyed per airline, normalization to enable extensive performance comparison between airlines could not be carried out.
+
+- SFO is only one of the over 80 domestic airports and 83 international airports that AA flies to and from. Therefore a customer complaint survey from SFO alone might not be representative of all AA customers.
+
+- Without additional data such as the total number of AA customers surveyed, it would be misleading to conclude that a total four AA customer complaints is significant and representative of the population of AA customers flying out of SFO.
+
+## Consumer Survey Data Summary
+These passenger datasets contain data pertaining to customer demographics and satisfaction with Airport facilities, services, and initiatives. The Customer Survey is conducted annually.
+
+Data Source: http://www.flysfo.com/media/customer-survey-data
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+install.packages("xlsx", repos = "http://cran.us.r-project.org")
+library(xlsx)
+library(dplyr)
+library(ggplot2)
+
+setwd("/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015/")
+surv.data <- read.xlsx("sfo cust_sat.xlsx", 1, colIndex = c(5,6,7,9,14,16,48), header = TRUE)
+surv.data$DEPTIME <- format(surv.data$DEPTIME, "%H:%M:%S")
+```
+
+```{r echo=FALSE}
+options(width = 120)
+trend <- subset(surv.data, Q8COM1 %in% 401:410)
+trend$Q8COM1[trend$Q8COM1 == 401] <- "Airline Delay"
+trend$Q8COM1[trend$Q8COM1 == 402] <- "Delay/Change Communication Issue"
+trend$Q8COM1[trend$Q8COM1 == 403] <- "Low Airline Customer Service Staff"
+trend$Q8COM1[trend$Q8COM1 == 404] <- "Unhelpful Airline Customer Service Staff"
+trend$Q8COM1[trend$Q8COM1 == 405] <- "Baggage Claim Difficulty"
+trend$Q8COM1[trend$Q8COM1 == 406] <- "Check-In-Staff Unavailability (AM)"
+trend$Q8COM1[trend$Q8COM1 == 407] <- "Short Connecting/Transfer Flight Time"
+trend$Q8COM1[trend$Q8COM1 == 408] <- "No Online Baggage Check"
+trend$Q8COM1[trend$Q8COM1 == 409] <- "No Personnel for Connection Flight"
+trend$Q8COM1[trend$Q8COM1 == 410] <- "Get rid of Self-Check-In Kiosks"
+
+trend$AIRLINE[trend$AIRLINE == 2] <- "Air Canada"
+trend$AIRLINE[trend$AIRLINE == 7] <- "Alaska Airlines"
+trend$AIRLINE[trend$AIRLINE == 8] <- "American"
+trend$AIRLINE[trend$AIRLINE == 15] <- "Delta"
+trend$AIRLINE[trend$AIRLINE == 16] <- "Emirates"
+trend$AIRLINE[trend$AIRLINE == 23] <- "Korean Air"
+trend$AIRLINE[trend$AIRLINE == 25] <- "Lufthansa"
+trend$AIRLINE[trend$AIRLINE == 26] <- "Philippine Airlines"
+trend$AIRLINE[trend$AIRLINE == 29] <- "Southwest"
+trend$AIRLINE[trend$AIRLINE == 33] <- "United"
+trend$AIRLINE[trend$AIRLINE == 34] <- "United Intl."
+trend$AIRLINE[trend$AIRLINE == 35] <- "US Airways"
+trend$AIRLINE[trend$AIRLINE == 36] <- "Virgin America"
+trend$AIRLINE[trend$AIRLINE == 37] <- "Virgin Atlantic"
+trend$AIRLINE[trend$AIRLINE == 39] <- "Aer Lingus"
+```
+
+```{r echo=FALSE}
+options(width = 120)
+american <- subset(trend, AIRLINE == "American")
+united <- subset(trend, AIRLINE == "United")
+```
+
+```{r echo=FALSE}
+options(width = 120)
+top.aa <- aggregate(american$Q8COM1, by = list(american$DESTINATION), FUN = length)
+names(top.aa) <- c("Destination", "No. of Complaints")
+top.aa$Destination[1:nrow(top.aa)] <- c("Chicago-O'Hare", "Dallas-Ft.Worth", "New York-JFK")
+
+top.aa1 <- aggregate(american$DESTINATION, by = list(american$Q8COM1), FUN = length)
+names(top.aa1) <- c("Complaints", "Frequency")
+
+top.ua <- aggregate(united$Q8COM1, by = list(united$DESTINATION), FUN = length)
+names(top.ua) <- c("Destination", "No. of Complaints")
+top.ua$Destination[1:nrow(top.ua)] <- c("Arcata, CA", "Denver", "Eugene, OR", "Honolulu", "Newark", "Palm Springs", "Salt Lake City")
+
+top.ua1 <- aggregate(united$DESTINATION, by = list(united$Q8COM1), FUN = length)
+names(top.ua1) <- c("Complaints", "Frequency")
+top.ua3 <- top.ua1[order(-top.ua1$Frequency),][1:3,]
+
+comparison <- subset(united, Q8COM1 %in% c("Low Airline Customer Service Staff", "Baggage Claim Difficulty", "Check-In-Staff Unavailability (AM)"))
+top.eval <- aggregate(comparison$DESTINATION, by = list(comparison$Q8COM1), FUN = length)
+names(top.eval) <- c("Complaints", "Frequency UA")
+top.eval[3,] <- c("Check-In-Staff Unavailability (AM)", 0)
+
+top.flight <- aggregate(trend$Q8COM1, by = list(trend$AIRLINE), FUN = length)
+names(top.flight) <- c("Flight ID", "Complaint Count")
+
+arc.comp <- subset(united, DESTINATION == 3)
+top.arc <- aggregate(arc.comp$DESTINATION, by = list(arc.comp$Q8COM1), FUN = length)
+names(top.arc) <- c("Complaints", "Frequency")
+
+eug.comp <- subset(united, DESTINATION == 30)
+top.eug <- aggregate(eug.comp$DESTINATION, by = list(eug.comp$Q8COM1), FUN = length)
+names(top.eug) <- c("Complaints", "Frequency")
+
+slc.comp <- subset(united, DESTINATION == 81)
+top.slc <- aggregate(slc.comp$DESTINATION, by = list(slc.comp$Q8COM1), FUN = length)
+names(top.slc) <- c("Complaints", "Frequency")
+```
+
+## Survey Data Breakdown and Analysis
+
+```{r echo=FALSE, fig.height=6, fig.width=7}
+par(mfrow = c(1,1), mar = c(9,4,3,2), cex.axis = 0.7)
+barplot(top.flight$`Complaint Count`, names.arg = top.flight$`Flight ID`, las = 3, main = "Customer Complaint Distribution by Airline", ylab = "Frequency", col = "magenta", yaxt = 'n')
+axis(2, 0:16)
+```
+
+The plot above shows a distribution of customer complaints by airline departing San Francisco International Airport. 
+
+Although this chart above infers that United Airlines (UA) has the most customer complaints, we cannot conclude that UA customers are the more dissatisfied than other airline customers. The complaint count for UA in comparison to other airlines may have resulted from UA accounting for a larger percent of all departing flights from SFO. With total departing flight count per airline, and total airline customer size data unavailable, normalization to evaluate this dataset could not be carried out to arrive at a solid conclusion.
+
+## Customer Complaint Distribution for all SFO Departing Flights
+![Survey Customer Complaints for all Flights](/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015/Complaint_ALL.png)
+The barplot above shows the frequency of customer complaints for flights departing from San Francisco International Airport.
+
+Chart Summary: Baggage claim issues account for ~ 22% of complaints, airline delay and communication issues account for ~ 24% of the complaints and staffing and customer issues account for ~ 34% of the complaints. Basing my conclusion solely on the survey data provided, I can conclude that these are the top 3 customer complaints from all flights departing SFO. 
+
+## Top 3 Customer Complaints Comparison: AA vs UA
+
+![American vs United Airline](/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015/Complaint_AAvsUA.png)
+To evaluate AA data further, I compared AA to UA based on complaints similiarities. The chart above depicts this. 
+
+### Note:
+*With departing flight count and customer size data unavailable, normalization to evaluate comparison extensively could not be carried out. As a result, data and results may be misleading.* 
+Since the data is not normalized, this is not an apples-to-apples comparison. Although from the above barplot you would infer that UA has a higher count of complaints reported, without data on the total number of departing flights for each airline, it would be misleading to conclude on UA's performance in comparison to AA. For example, if UA has double the number of flights departing from SFO compared to American, the complaint comparison chart becomes an equivalent comparison.
+
+### Additional Data Analysis
+Due to a lack of AA data and for a better understanding of what can be done with this data, I will analyze UA survey data. 
+
+*(continued on next page)*
+
+```{r fig.height = 5, fig.width = 8, echo=FALSE}
+par(mfrow = c(1,2), mar = c(12,4,3,2), cex.axis = 0.7, mgp = c(3,1,0), cex.main = 0.7)
+barplot(top.ua1$Frequency, names.arg = top.ua1$Complaints, las = 3, main = "Customer Complaint Distribution", ylab = "Frequency", col = "magenta")
+barplot(top.ua$`No. of Complaints`, names.arg = top.ua$Destination, las = 3, main = "Customer Complaint Count by Destination", ylab = "Frequency", col = "green")
+```
+
+*Plots are based on United Airline survey data only*
+
+### Customer Complaints Frequency by Flight Destination
+
+```{r fig.height = 5, fig.width = 8, echo=FALSE}
+par(mfrow = c(1,3), mar = c(12,4,3,2), cex.axis = 0.7, mgp = c(3,1,0), cex.main = 0.7)
+barplot(top.eug$Frequency, names.arg = top.eug$Complaints, las = 3, main = "Customer Complaint Count: Eugene, OR", ylab = "Frequency", col = "blue", yaxt = 'n', ylim = c(0,2))
+axis(2, 0:2)
+barplot(top.slc$Frequency, names.arg = top.slc$Complaints, las = 3, main = "Customer Complaint Count: Salt Lake City", ylab = "Frequency", col = "pink", yaxt = 'n', ylim = c(0,2))
+axis(2, 0:2)
+barplot(top.arc$Frequency, names.arg = top.arc$Complaints, las = 3, main = "Customer Complaint Count: Arcata, CA", ylab = "Frequency", col = "gold", yaxt = 'n')
+axis(2, 0:2)
+```
+
+Plot 1 (Magenta) shows the distribution of customer complaints across all UA flights departing from SFO. Plot 2 (Green) shows the frequency of customer complaints by flight destination. 
+
+Plots 3, 4, & 5 (Blue, Pink & Gold) break down plot 2 for flight destination: Eugene, OR, Salt Lake City and Arcata, CA. We can infer from these plots that complaints such as "Airline Delay" and "Delay Change Communication Issue" occur frequently and such a complaint occurrence is not dependent on the flight destination. 
+
+## Appendix
+### Raw Data Snippet
+Below is a snapshot of the cleaned data table.
+```{r echo=FALSE}
+head(surv.data)
+```
+
+Below are tabular representations of the barplot trio displayed in the previous page. 
+```{r echo=FALSE}
+options(width = 120)
+top.ua
+top.ua1
+```
+
+## Complaint Comparison for Airlines with Similar Review Frequency
+
+![Airlines with Similar Frequency](/Users/sandraezidiegwu/Documents/Data Science/SFO Customer Survey 2015/Complaint_Sim.png)
+Although these airlines contained equal complaint counts, the complaints vary.
+
+# Contact
+email: nky@utexas.edu
